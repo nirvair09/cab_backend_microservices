@@ -1,9 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
-
+const connectDB = require("./db/connectDB");
 dotenv.config();
 
 const cookieParser = require("cookie-parser");
+
+connectDB();
 
 const app = express();
 
