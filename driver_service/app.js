@@ -4,6 +4,7 @@ const connectDB = require("./db/connectDB")
 dotenv.config();
 
 const cookieParser = require("cookie-parser");
+const router = require("./routes/driver.routes");
 connectDB();
 const app = express();
 
@@ -11,4 +12,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-module.export = app;
+app.use("/cab/driver", router);
+
+module.exports = app;
