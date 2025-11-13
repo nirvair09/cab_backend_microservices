@@ -1,5 +1,5 @@
 const userModel = require('../models/user.model');
-
+const blackListTokenModel = require('../models/blacklisttoken.model')
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -70,5 +70,24 @@ module.exports.loginUser = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ message: "Error in logging in user", error: error.message });
+    }
+};
+
+module.exports.logOutUser = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(400).json({ message: "No token found in cookies" });
+        }
+
+        const blackToken = await blackListTokenModel({ token });
+        blackToken.save();
+        console.log(blackToken);
+
+        res.clearCookie('token');
+
+        return res.status(200).json({ message: "Logged Out Successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Error in logging out user", error: error.message });
     }
 };
