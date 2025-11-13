@@ -38,4 +38,37 @@ module.exports.registerUser = async (req, res) => {
         res.status(500).json({ message: "Error in registering user", error: error.message });
 
     }
-}
+};
+
+
+module.exports.loginUser = async (req, res) => {
+    try {
+
+        const { email, password } = req.body;
+
+        const isUserPresent = await userModel.findOne({ email }).select("+password");
+
+        if (!isUserPresent) {
+            return res.status(400).json({ message: "User not present with this email id" });
+        }
+
+        const comparePassword = await bcrypt.compare(password, isUserPresent.password);
+
+        if (!comparePassword) {
+            return res.status(400).json("Wrong password");
+        }
+
+        const token = jwt.sign({ id: isUserPresent._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
+
+        const userWithOutPassword = isUserPresent.toObject();
+        delete userWithOutPassword.password;
+
+        res.cookie("token", token);
+
+        res.send({ token, user: userWithOutPassword });
+
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error in logging in user", error: error.message });
+    }
+};
