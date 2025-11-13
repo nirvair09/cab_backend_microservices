@@ -37,3 +37,42 @@ module.exports.registerDriver = async (req, res) => {
 
     }
 };
+
+module.exports.loginDriver = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const existingDriver = await driverModel.findOne({ email }).select("+password");;
+
+        if (!existingDriver) {
+            return res.status(400).json({ message: "Driver donot exists" });
+        }
+        console.log("Existing Driver:", existingDriver);
+        console.log("Password from req:", password);
+        console.log("Password from DB:", existingDriver.password);
+
+
+        const comparePassword = await bcrypt.compare(password, existingDriver.password);
+
+
+        if (!comparePassword) {
+            return res.status(400).json({ message: "Wrong Password" });
+
+        }
+
+        const token = jwt.sign({ id: existingDriver._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
+
+        res.cookie("token", token);
+
+        const driverWithOutPassword = existingDriver.toObject();
+        delete driverWithOutPassword.password;
+
+        res.send({ token, driver: driverWithOutPassword });
+
+
+    } catch (error) {
+        res.status(500).json({ message: "Error in registering driver", error: error.message });
+
+    };
+};
+
