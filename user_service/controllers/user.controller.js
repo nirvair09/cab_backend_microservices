@@ -100,3 +100,13 @@ module.exports.getUserProfile = async (req, res) => {
     }
 };
 
+module.exports.acceptRide = async (req, res) => {
+    rideEventEmitter.once("ride-accepted", (data) => {
+        res.send(data);
+    });
+
+    setTimeout(() => {
+        res.status(204).send();
+    }, 30000);
+}
+
