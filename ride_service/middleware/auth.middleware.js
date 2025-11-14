@@ -29,3 +29,33 @@ module.exports.userAuth = async (req, res, next) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+module.exports.driverAuth = async (req, res, next) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const response = await axios.get("http://localhost:3003/cab/driver/profile", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const driver = response.data;
+
+        if (!driver) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        req.driver = driver;
+
+        next();
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
