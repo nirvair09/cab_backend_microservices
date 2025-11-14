@@ -103,4 +103,18 @@ module.exports.getDriverProfile = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: "Error in fetching driver profile", error: error.message });
     }
+};
+
+
+module.exports.toggleAvailabilty = async (req, res) => {
+    try {
+        const driver = await driverModel.findById(req.driver._id);
+        driver.isAvailable = !driver.isAvailable;
+        await driver.save();
+        res.send(driver);
+    } catch (error) {
+
+        res.status(500).json({ message: error.message });
+
+    }
 }
