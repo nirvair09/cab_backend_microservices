@@ -117,4 +117,29 @@ module.exports.toggleAvailabilty = async (req, res) => {
         res.status(500).json({ message: error.message });
 
     }
-}
+};
+
+const pendingRequests = [];
+
+module.exports.waitForNewRide = async (req, res) => {
+
+    req.setTimeout(30000, () => {
+        res.status(204).end();
+    });
+
+    pendingRequests.push(res);
+
+};
+
+
+subscribeToQueue("new-ride", (data) => {
+    const rideData = JSON.parse(data);
+
+    // Send the new ride data to all pending requests
+    pendingRequests.forEach(res => {
+        res.json(rideData);
+    });
+
+    // Clear the pending requests
+    pendingRequests.length = 0;
+});
