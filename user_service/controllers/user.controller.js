@@ -91,3 +91,12 @@ module.exports.logOutUser = async (req, res) => {
         return res.status(500).json({ message: "Error in logging out user", error: error.message });
     }
 };
+
+module.exports.getUserProfile = async (req, res) => {
+    try {
+        res.send(req.user);
+    } catch (error) {
+        return res.status(500).json({ message: "Error in fetching user profile", error: error.message });
+    }
+};
+
