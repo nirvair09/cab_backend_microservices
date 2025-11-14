@@ -1,18 +1,36 @@
 const rideModel = require("../models/ride.model");
+const { publishToQueue } = require("../rabbit_service/rabbit.service");
 
-module.exports.createRide = async (req, res) => {
-    try {
+module.exports.createRide = async (req, res, next) => {
 
-        const { pickup, destination } = req.body;
+    const { pickup, destination } = req.body;
 
-        if (!pickup || !destination) {
-            return res.status(400).json({ message: "Pickup and Destination are required" });
-        }
+    const newRide = await rideModel({
+        user: req.user._id,
+        pickup,
+        destination,
+        status: "requested"
+    });
 
-        console.log("Ride request received:", { pickup, destination });
+    await newRide.save();
+    publishToQueue("new-ride", JSON.stringify(newRide));
 
-    } catch (error) {
-        return res.status(500).json({ message: "Server Error" });
-    }
+    res.send(newRide);
 };
 
+
+module.exports.acceptRide = async (req, res, next) => {
+    const { rideId } = req.body;
+
+    const ride = await rideModel.findById(rideId);
+
+    if (!ride) {
+        return res.status(404).send({ message: "Ride not found" });
+    }
+
+    ride.status = "accepted";
+    await ride.save();
+    publishToQueue("ride-accepted", JSON.stringify(ride));
+
+    res.send(ride);
+}
