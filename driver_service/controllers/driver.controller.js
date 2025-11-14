@@ -94,3 +94,13 @@ module.exports.logOutDriver = async (req, res) => {
         return res.status(500).json({ message: "Error in logging out user", error: error.message });
     }
 };
+
+module.exports.getDriverProfile = async (req, res) => {
+    try {
+
+        res.send(req.driver);
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error in fetching driver profile", error: error.message });
+    }
+}
