@@ -2,6 +2,7 @@ const driverModel = require("../models/driver.model");
 const blackListTokenModel = require('../models/blacklisttoken.model')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { subscribeToQueue } = require("../rabbit_service/rabbit.service");
 
 // Controller logic will be added here in the future
 module.exports.registerDriver = async (req, res) => {
