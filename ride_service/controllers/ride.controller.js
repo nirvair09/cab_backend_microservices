@@ -3,16 +3,17 @@ const { publishToQueue } = require("../rabbit_service/rabbit.service");
 
 module.exports.createRide = async (req, res, next) => {
 
-    const { pickup, destination } = req.body;
+    const { pickupLocation, destination } = req.body;
 
     const newRide = await rideModel({
         user: req.user._id,
-        pickup,
+        pickupLocation,
         destination,
         status: "requested"
     });
 
     await newRide.save();
+    console.log("Publishing to queue", newRide);
     publishToQueue("new-ride", JSON.stringify(newRide));
 
     res.send(newRide);

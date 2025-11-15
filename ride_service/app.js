@@ -14,6 +14,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", router);
+app.use("/cab/ride", router);
 
-module.export = app;
+module.exports = app;
