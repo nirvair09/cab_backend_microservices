@@ -5,12 +5,13 @@ module.exports.createRide = async (req, res, next) => {
 
     const { pickupLocation, destination } = req.body;
 
-    const newRide = await rideModel({
-        user: req.user._id,
+    const newRide = new rideModel({
+        userID: req.user._id,
         pickupLocation,
         destination,
         status: "requested"
     });
+
 
     await newRide.save();
     console.log("Publishing to queue", newRide);
