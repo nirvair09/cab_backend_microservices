@@ -5,9 +5,9 @@ dotenv.config();
 
 const cookieParser = require("cookie-parser");
 const router = require("./routes/ride.routes");
-
+const { connect } = require("./rabbit_service/rabbit.service");
 connectDB();
-
+connect();
 const app = express();
 
 app.use(express.json());
