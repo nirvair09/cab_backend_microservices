@@ -1,46 +1,71 @@
-const ampq = require('amqplib');
+const amqp = require('amqplib');
 
 const RABBIT_URL = process.env.RABBIT_URL;
 
+let connection = null;
+let channel = null;
 
-let connection, channel;
+// Helper to connect only once
+async function connect() {
+    if (channel) return channel;
 
-async function connect(params) {
+    try {
+        connection = await amqp.connect(RABBIT_URL);
+        channel = await connection.createChannel();
 
-    connection = await ampq.connect(RABBIT_URL);
+        console.log("RabbitMQ connected");
+        return channel;
 
-    channel = await connection.createChannel();
-
-    console.log("RabbitMQ connected");
-
+    } catch (err) {
+        console.error("RabbitMQ connection failed:", err.message);
+        throw err;
+    }
 }
 
+// Safe subscriber
 async function subscribeToQueue(queueName, callback) {
+    try {
+        const ch = await connect();
 
-    if (!channel) await connect();
+        await ch.assertQueue(queueName, { durable: true });
 
-    await channel.assertQueue(queueName);
+        ch.consume(queueName, (msg) => {
+            if (!msg) return;
 
-    channel.consume(queueName, (message) => {
-        callback(message.content.toString());
-        channel.ack(message);
-    });
-};
+            try {
+                callback(msg.content.toString());
+            } catch (err) {
+                console.error("Error processing message:", err.message);
+            }
 
+            ch.ack(msg);
+        });
 
+    } catch (err) {
+        console.error(`Failed to subscribe to ${queueName}:`, err.message);
+    }
+}
+
+// Safe publisher
 async function publishToQueue(queueName, data) {
-    if (!channel) await connect();
+    try {
+        const ch = await connect();
 
-    await channel.assertQueue(queueName);
+        await ch.assertQueue(queueName, { durable: true });
 
-    channel.sendToQueue(queueName, Buffer.from(data));
-};
+        const sent = ch.sendToQueue(queueName, Buffer.from(data));
+
+        if (!sent) {
+            console.warn(`Queue ${queueName} is backed up, send failed`);
+        }
+
+    } catch (err) {
+        console.error(`Failed to publish to ${queueName}:`, err.message);
+    }
+}
 
 module.exports = {
     subscribeToQueue,
     publishToQueue,
     connect
 };
-
-
-
