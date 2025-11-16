@@ -2,16 +2,16 @@ const express = require("express");
 const { registerDriver, loginDriver, logOutDriver, getDriverProfile, waitForNewRide, toggleAvailabilty } = require("../controllers/driver.controller");
 const { driverAuth } = require("../middleware/authMiddleWare");
 
-const router = express.Router();
+const driverRouter = express.Router();
 
-router.post("/register", registerDriver);
-router.post("/login", loginDriver);
-router.post("/logout", logOutDriver);
+driverRouter.post("/register", registerDriver);
+driverRouter.post("/login", loginDriver);
+driverRouter.post("/logout", logOutDriver);
 
-router.get("/profile", driverAuth, getDriverProfile);
-router.get("/new-ride", driverAuth, waitForNewRide);
+driverRouter.get("/profile", driverAuth, getDriverProfile);
+driverRouter.get("/new-ride", driverAuth, waitForNewRide);
 
-router.patch("/toggle-availability", driverAuth, toggleAvailabilty);
+driverRouter.patch("/toggle-availability", driverAuth, toggleAvailabilty);
 
-module.exports = router;
+module.exports = driverRouter;
 

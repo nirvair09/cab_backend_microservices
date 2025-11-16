@@ -3,7 +3,8 @@ const blackListTokenModel = require('../models/blacklisttoken.model')
 const { subscribeToQueue } = require("../rabbit_service/rabbit.service");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const EventEmitter = require('events');
+const rideEventEmitter = new EventEmitter();
 
 
 module.exports.registerUser = async (req, res) => {

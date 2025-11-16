@@ -1,9 +1,9 @@
 const express = require("express");
 const { userAuth, driverAuth } = require("../middleware/auth.middleware");
 const { createRide, acceptRide } = require("../controllers/ride.controller");
-const router = express.Router();
+const rideRouter = express.Router();
 
-router.post("/create-ride", userAuth, createRide);
-router.put("/accept-ride", driverAuth, acceptRide);
+rideRouter.post("/create-ride", userAuth, createRide);
+rideRouter.put("/accept-ride", driverAuth, acceptRide);
 
-module.exports = router;
+module.exports = rideRouter;

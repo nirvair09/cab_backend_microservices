@@ -6,7 +6,7 @@ let connection = null;
 let channel = null;
 
 // Helper to connect only once
-async function connect() {
+async function connectRabbit() {
     if (channel) return channel;
 
     try {
@@ -67,5 +67,5 @@ async function publishToQueue(queueName, data) {
 module.exports = {
     subscribeToQueue,
     publishToQueue,
-    connect
+    connectRabbit
 };
