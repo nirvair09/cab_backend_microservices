@@ -48,9 +48,9 @@ module.exports.loginDriver = async (req, res) => {
         if (!existingDriver) {
             return res.status(400).json({ message: "Driver donot exists" });
         }
-        console.log("Existing Driver:", existingDriver);
-        console.log("Password from req:", password);
-        console.log("Password from DB:", existingDriver.password);
+        // console.log("Existing Driver:", existingDriver);
+        // console.log("Password from req:", password);
+        // console.log("Password from DB:", existingDriver.password);
 
 
         const comparePassword = await bcrypt.compare(password, existingDriver.password);
@@ -86,7 +86,7 @@ module.exports.logOutDriver = async (req, res) => {
 
         const blackToken = await blackListTokenModel({ token });
         blackToken.save();
-        console.log(blackToken);
+        // console.log(blackToken);
 
         res.clearCookie('token');
 

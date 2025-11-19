@@ -14,7 +14,7 @@ module.exports.createRide = async (req, res, next) => {
 
 
     await newRide.save();
-    console.log("Publishing to queue", newRide);
+    // console.log("Publishing to queue", newRide);
     publishToQueue("new-ride", JSON.stringify(newRide));
 
     res.send(newRide);

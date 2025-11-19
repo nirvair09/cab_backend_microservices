@@ -10,7 +10,7 @@ const rideEventEmitter = new EventEmitter();
 module.exports.registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        console.log(req.body);
+        // console.log(req.body);
 
         const existingUser = await userModel.findOne({ email });
 
@@ -83,7 +83,7 @@ module.exports.logOutUser = async (req, res) => {
 
         const blackToken = await blackListTokenModel({ token });
         blackToken.save();
-        console.log(blackToken);
+        // console.log(blackToken);
 
         res.clearCookie('token');
 
